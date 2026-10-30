@@ -12,7 +12,7 @@ class TestRegistration:
         driver.find_element(*RegistrationPageLocators.PASSWORD_INPUT).send_keys(data.generate_password(6))
         driver.find_element(*RegistrationPageLocators.REGISTER_BUTTON).click()
 
-        wait.until(EC.url_to_be(data.LOGIN_URL))
+        assert wait.until(EC.url_to_be(data.LOGIN_URL))
         assert wait.until(EC.visibility_of_element_located(LoginPageLocators.HEADING)).is_displayed()
 
     def test_registration_with_short_password_shows_error(self, driver, wait):
@@ -22,6 +22,5 @@ class TestRegistration:
         driver.find_element(*RegistrationPageLocators.PASSWORD_INPUT).send_keys(data.generate_password(5))
         driver.find_element(*RegistrationPageLocators.REGISTER_BUTTON).click()
 
-        error = wait.until(EC.visibility_of_element_located(RegistrationPageLocators.PASSWORD_ERROR))
-        assert error.is_displayed()
+        assert wait.until(EC.visibility_of_element_located(RegistrationPageLocators.PASSWORD_ERROR)).is_displayed()
         assert driver.current_url == data.REGISTER_URL

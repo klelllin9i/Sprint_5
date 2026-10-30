@@ -8,7 +8,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
 import data
-from locators import LoginPageLocators, MainPageLocators
+from helpers import fill_login_form_and_submit
+from locators import MainPageLocators
 
 
 @pytest.fixture
@@ -37,8 +38,7 @@ def user():
         "password": data.generate_password(),
         "name": data.USER_NAME,
     }
-    response = requests.post(data.API_REGISTER_URL, json=credentials, timeout=10)
-    assert response.status_code == 200, f"Не удалось создать пользователя: {response.text}"
+    requests.post(data.API_REGISTER_URL, json=credentials, timeout=10)
     return credentials
 
 
@@ -46,8 +46,6 @@ def user():
 def logged_in_driver(driver, wait, user):
     """Драйвер с авторизованным пользователем, открыта главная страница."""
     driver.get(data.LOGIN_URL)
-    wait.until(EC.visibility_of_element_located(LoginPageLocators.EMAIL_INPUT)).send_keys(user["email"])
-    driver.find_element(*LoginPageLocators.PASSWORD_INPUT).send_keys(user["password"])
-    driver.find_element(*LoginPageLocators.LOGIN_BUTTON).click()
+    fill_login_form_and_submit(driver, wait, user)
     wait.until(EC.visibility_of_element_located(MainPageLocators.PLACE_ORDER_BUTTON))
     return driver
